@@ -1,11 +1,9 @@
-﻿using AltVehiclesBin.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using VehicleMods.Models;
 
-namespace AltVehiclesBin
+namespace VehicleMods
 {
     class Program
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace AltVehiclesBin.Models
+namespace VehicleMods.Models
 {
     public class VehMods
     {
