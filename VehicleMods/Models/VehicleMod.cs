@@ -8,12 +8,12 @@ namespace VehicleMods.Models
     {
         public VehicleMod()
         {
-            ModIndex = new List<short>();
+            ModIndex = new List<ushort>();
         }
 
-        public short ModType { get; set; }
-        public short ModNum { get; set; }
-        public List<short> ModIndex { get; set; }
+        public byte ModType { get; set; }
+        public byte ModNum { get; set; }
+        public List<ushort> ModIndex { get; set; }
 
         public void Serialize(BinaryWriter writer)
         {
@@ -27,29 +27,22 @@ namespace VehicleMods.Models
             }
         }
 
-        public static VehicleMod Deserialize(byte[] buffer, ref int indexPosition)
+        public static VehicleMod Deserialize(BinaryReader reader)
         {
-            if (indexPosition >= buffer.Length)
+            if (reader.BaseStream.Position >= reader.BaseStream.Length)
             {
                 return null;
             }
 
             var instance = new VehicleMod();
 
-            var modType = new byte[2];
-            Array.Copy(buffer, indexPosition, modType, 0, 1);
-            instance.ModType = BitConverter.ToInt16(modType, 0);
-            indexPosition += 1;
+            instance.ModType = reader.ReadByte();
 
-            var modNum = new byte[2];
-            Array.Copy(buffer, indexPosition, modNum, 0, 1);
-            instance.ModNum = BitConverter.ToInt16(modNum, 0);
-            indexPosition += 1;
+            instance.ModNum = reader.ReadByte();
 
             for (var ii = 0; ii < instance.ModNum; ii++)
             {
-                instance.ModIndex.Add(BitConverter.ToInt16(buffer, indexPosition));
-                indexPosition += 2;
+                instance.ModIndex.Add(BitConverter.ToUInt16(reader.ReadBytes(2)));
             }
 
             return instance;

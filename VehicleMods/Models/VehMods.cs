@@ -30,22 +30,15 @@ namespace VehicleMods.Models
         {
             var instance = new VehMods();
 
-            var contentBytes = new byte[reader.BaseStream.Length];
-
-            reader.Read(contentBytes, 0, contentBytes.Length);
-
-            instance.MagicBytes = new byte[2];
-            Array.Copy(contentBytes, 0, instance.MagicBytes, 0, 2);
+            instance.MagicBytes = reader.ReadBytes(2);
             
-            instance.Version = BitConverter.ToInt16(contentBytes, 2);
-
-            var index = 4;
+            instance.Version = BitConverter.ToInt16(reader.ReadBytes(2));
 
             VehicleModKit modKit;
 
             do
             {
-                modKit = VehicleModKit.Deserialize(contentBytes, ref index);
+                modKit = VehicleModKit.Deserialize(reader);
 
                 if (modKit != null)
                 {

@@ -13,8 +13,8 @@ namespace VehicleMods.Models
         }
 
         public string ModKitName { get; set; }
-        public short ModNumTotal { get; set; }
-        public short Index { get; set; }
+        public byte ModNumTotal { get; set; }
+        public ushort Index { get; set; }
 
         public List<VehicleMod> Mods { get; set; }
 
@@ -33,37 +33,30 @@ namespace VehicleMods.Models
             }
         }
 
-        public static VehicleModKit Deserialize(byte[] buffer, ref int indexPosition)
+        public static VehicleModKit Deserialize(BinaryReader reader)
         {
-            if (indexPosition >= buffer.Length)
+            if (reader.BaseStream.Position >= reader.BaseStream.Length)
             {
                 return null;
             }
 
             var instance = new VehicleModKit();
 
-            instance.Index = BitConverter.ToInt16(buffer, indexPosition);
-            indexPosition += 2;
+            instance.Index = BitConverter.ToUInt16(reader.ReadBytes(2));
 
-            var modKitLength = new byte[2];
-            Array.Copy(buffer, indexPosition, modKitLength, 0, 2);
-            indexPosition += 2;
+            var modKitLength = reader.ReadBytes(2);
 
             if (modKitLength.Length > 0)
             {
                 var modKitNameStringLength = BitConverter.ToInt16(modKitLength);
 
-                instance.ModKitName = Encoding.UTF8.GetString(buffer, indexPosition, modKitNameStringLength);
-                indexPosition += modKitNameStringLength;
+                instance.ModKitName = Encoding.UTF8.GetString(reader.ReadBytes(modKitNameStringLength));
 
-                var modNumTotal = new byte[2];
-                Array.Copy(buffer, indexPosition, modNumTotal, 0, 1);
-                instance.ModNumTotal = BitConverter.ToInt16(modNumTotal, 0);
-                indexPosition += 1;
+                instance.ModNumTotal = reader.ReadByte();
 
                 for (var i = 0; i < instance.ModNumTotal; i++)
                 {
-                    var mod = VehicleMod.Deserialize(buffer, ref indexPosition);
+                    var mod = VehicleMod.Deserialize(reader);
 
                     instance.Mods.Add(mod);
                 }
